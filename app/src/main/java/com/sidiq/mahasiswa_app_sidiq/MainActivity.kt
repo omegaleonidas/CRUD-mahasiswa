@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showData() {
-        val listMahasiswa = NetworkModule.service().getData()
+        val listMahasiswa = NetworkModule().service().getData()
         listMahasiswa.enqueue(object : retrofit2.Callback<ResponseGetData> {
 
 
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun hapusData(idMahasiswa: String?) {
 
-        val hapus = NetworkModule.service().deleteData(idMahasiswa?: "")
+        val hapus = NetworkModule().service().deleteData(idMahasiswa?: "")
         hapus.enqueue(object : Callback<ResponseAction> {
 
             override fun onResponse(
