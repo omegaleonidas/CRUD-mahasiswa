@@ -1,0 +1,972 @@
+Index: .idea/.name
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/.name	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
++++ .idea/.name	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -0,0 +1,1 @@
++Mahasiswa_App_sidiq
+\ No newline at end of file
+Index: .idea/dictionaries/sidiq.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/dictionaries/sidiq.xml	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
++++ .idea/dictionaries/sidiq.xml	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -0,0 +1,3 @@
++<component name="ProjectDictionaryState">
++  <dictionary name="sidiq" />
++</component>
+\ No newline at end of file
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/build.gradle	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/build.gradle	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -3,13 +3,13 @@
+ apply plugin: 'kotlin-android-extensions'
+ 
+ android {
+-    compileSdkVersion 29
++    compileSdkVersion 30
+     buildToolsVersion "29.0.3"
+ 
+     defaultConfig {
+         applicationId "com.sidiq.mahasiswa_app_sidiq"
+-        minSdkVersion 26
+-        targetSdkVersion 29
++        minSdkVersion 21
++        targetSdkVersion 30
+         versionCode 1
+         versionName "1.0"
+ 
+@@ -55,11 +55,10 @@
+ 
+     // rx
+     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+-    // Because RxAndroid releases are few and far between, it is recommended you also
+-    // explicitly depend on RxJava's latest version for bug fixes and new features.
+-    // (see https://github.com/ReactiveX/RxJava/releases for latest 3.x.x version)
+     implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
+     implementation 'com.squareup.retrofit2:adapter-rxjava3:2.6.1'
+ 
++//
++    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+ 
+ }
+\ No newline at end of file
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/AndroidManifest.xml	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -15,8 +15,8 @@
+         android:theme="@style/AppTheme"
+         android:usesCleartextTraffic="true">
+ 
+-        <activity android:name=".ImputActivity"></activity>
+-        <activity android:name=".MainActivity">
++        <activity android:name=".View.ImputActivity"></activity>
++        <activity android:name=".View.MainActivity">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+ 
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/Repository.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/Repository.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/Repository.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -0,0 +1,25 @@
++package com.sidiq.mahasiswa_app_sidiq.Repo
++
++//import com.sidiq.mahasiswa_app_sidiq.View.ImputActivity
++import com.sidiq.mahasiswa_app_sidiq.model.ResponseGetData
++import com.sidiq.mahasiswa_app_sidiq.network.NetworkModule
++import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
++import io.reactivex.rxjava3.schedulers.Schedulers
++
++class Repository {
++
++    fun getData(responHandler: (ResponseGetData) -> Unit, errorHandler: (Throwable) -> Unit) {
++
++        NetworkModule().service().getData().subscribeOn(Schedulers.io())
++            .observeOn(AndroidSchedulers.mainThread())
++            .subscribe({
++                responHandler(it)
++            }, {
++                errorHandler(it)
++
++            })
++
++    }
++
++
++}
+\ No newline at end of file
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/RepositoryInsert.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/RepositoryInsert.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/RepositoryInsert.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -0,0 +1,28 @@
++package com.sidiq.mahasiswa_app_sidiq.Repo
++
++import com.sidiq.mahasiswa_app_sidiq.model.ResponseAction
++import com.sidiq.mahasiswa_app_sidiq.network.NetworkModule
++import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
++import io.reactivex.rxjava3.schedulers.Schedulers
++
++class RepositoryInsert {
++
++
++    //untuk merepository penyimpanan data
++    fun getInsertdata(
++        nama: String,
++        nobp: String,
++        alamat: String,
++        responHandler: (ResponseAction) -> Unit,
++        errorHandler: (Throwable) -> Unit
++    ) {
++        NetworkModule().service().insertData(nama, nobp, alamat)
++            .subscribeOn(Schedulers.io())
++            .observeOn(AndroidSchedulers.mainThread())
++            .subscribe({
++                responHandler(it)
++            }, {
++                errorHandler(it)
++            })
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/RepositoryUpdate.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/RepositoryUpdate.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/RepositoryUpdate.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -0,0 +1,27 @@
++package com.sidiq.mahasiswa_app_sidiq.Repo
++
++import com.sidiq.mahasiswa_app_sidiq.model.ResponseAction
++import com.sidiq.mahasiswa_app_sidiq.network.NetworkModule
++import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
++import io.reactivex.rxjava3.schedulers.Schedulers
++
++class RepositoryUpdate {
++
++    fun getUpdatetdata(
++        id: String,
++        nama: String,
++        nobp: String,
++        alamat: String,
++        responHandler: (ResponseAction) -> Unit,
++        errorHandler: (Throwable) -> Unit
++    ) {
++        NetworkModule().service().updateData(id, nama, nobp, alamat)
++            .subscribeOn(Schedulers.io())
++            .observeOn(AndroidSchedulers.mainThread())
++            .subscribe({
++                responHandler(it)
++            }, {
++                errorHandler(it)
++            })
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/RepositotyDelete.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/RepositotyDelete.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/Repo/RepositotyDelete.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -0,0 +1,22 @@
++package com.sidiq.mahasiswa_app_sidiq.Repo
++
++import com.sidiq.mahasiswa_app_sidiq.model.ResponseAction
++import com.sidiq.mahasiswa_app_sidiq.network.NetworkModule
++import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
++import io.reactivex.rxjava3.schedulers.Schedulers
++
++class RepositotyDelete {
++
++    fun getDelete(
++        id: String, responHandler: (ResponseAction) -> Unit, errorHandler: (Throwable) -> Unit
++    ) {
++        NetworkModule().service().deleteData(id)
++            .subscribeOn(Schedulers.io())
++            .observeOn(AndroidSchedulers.mainThread())
++            .subscribe({
++                responHandler(it)
++            }, {
++                errorHandler(it)
++            })
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/View/ImputActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/View/ImputActivity.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/View/ImputActivity.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -0,0 +1,85 @@
++package com.sidiq.mahasiswa_app_sidiq.View
++
++import android.content.Intent
++import android.os.Bundle
++import android.widget.Toast
++import androidx.appcompat.app.AppCompatActivity
++import androidx.lifecycle.ViewModelProviders
++import com.sidiq.mahasiswa_app_sidiq.R
++import com.sidiq.mahasiswa_app_sidiq.ViewModel.ViewModelInputActivity
++import com.sidiq.mahasiswa_app_sidiq.model.DataItem
++import kotlinx.android.synthetic.main.activity_imput.*
++
++
++class ImputActivity : AppCompatActivity() {
++
++    lateinit var viewModel: ViewModelInputActivity
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        setContentView(R.layout.activity_imput)
++        viewModel = ViewModelProviders.of(this).get(ViewModelInputActivity::class.java)
++        val getData = intent.getParcelableExtra<DataItem>("data")
++        if (getData != null) {
++            etNama.setText(getData.mahasiswaNama)
++            etNohp.setText(getData.mahasiswaNobp)
++            etAlamat.setText(getData.mahasiswaAlamat)
++
++            btn1.text = "Update"
++
++        }
++        when (btn1.text) {
++            "Update" -> {
++                //untuk update
++                btn1.setOnClickListener {
++
++                    val id = getData?.idMahasiswa.toString()
++                    val nama = etNama.text.toString()
++                    val nobp = etNohp.text.toString()
++                    val alamat = etAlamat.text.toString()
++
++                    viewModel.getListDataUpdate(id, nama, nobp, alamat)
++                    // memberikan notifikasi berupa toast
++                    Toast.makeText(applicationContext, "data telah Diubah", Toast.LENGTH_SHORT)
++                        .show()
++                    //setelah di simpan akan pindah ke avtivity selanjutnya
++                    val intent = Intent(this, MainActivity::class.java)
++                    startActivity(intent)
++                }
++
++            }
++            else -> {
++
++                btn1.setOnClickListener {
++
++                    btn1.setOnClickListener {
++
++                        //ambil inputan user
++                        val nama = etNama.text.toString()
++                        val nobp = etNohp.text.toString()
++                        val alamat = etAlamat.text.toString()
++
++                        viewModel.getListDataInsert(nama, nobp, alamat)
++                        // memberikan notifikasi berupa toast
++                        Toast.makeText(
++                            applicationContext,
++                            "data telah disimpan",
++                            Toast.LENGTH_SHORT
++                        ).show()
++                        //setelah di simpan akan pindah ke avtivity selanjutnya
++                        val intent = Intent(this, MainActivity::class.java)
++                        startActivity(intent)
++                    }
++                }
++            }
++        }
++
++        btn2.setOnClickListener {
++            finish()
++
++        }
++    }
++
++
++}
++
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/View/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/View/MainActivity.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/View/MainActivity.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -0,0 +1,101 @@
++package com.sidiq.mahasiswa_app_sidiq.View
++
++import android.content.Intent
++import android.os.Bundle
++import android.widget.Toast
++import androidx.appcompat.app.AlertDialog
++import androidx.appcompat.app.AppCompatActivity
++import androidx.lifecycle.Observer
++import androidx.lifecycle.ViewModelProviders
++import com.sidiq.mahasiswa_app_sidiq.R
++import com.sidiq.mahasiswa_app_sidiq.ViewModel.ViewModelMainActivity
++import com.sidiq.mahasiswa_app_sidiq.adapter.dataAdapter
++import com.sidiq.mahasiswa_app_sidiq.model.DataItem
++import com.sidiq.mahasiswa_app_sidiq.model.ResponseAction
++import com.sidiq.mahasiswa_app_sidiq.model.ResponseGetData
++
++import kotlinx.android.synthetic.main.activity_main.*
++
++class MainActivity : AppCompatActivity() {
++
++    lateinit var viewModel: ViewModelMainActivity
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        setContentView(R.layout.activity_main)
++        viewModel = ViewModelProviders.of(this).get(ViewModelMainActivity::class.java)
++
++        fab.setOnClickListener {
++            val intent = Intent(this, ImputActivity::class.java)
++            startActivity(intent)
++        }
++        viewModel.getListData()
++
++        attachobserve()
++
++    }
++
++    private fun attachobserve() {
++        //getData
++        viewModel.responseData.observe(this, Observer { showData(it) })
++        viewModel.isError.observe(this, Observer { showError(it) })
++
++        //hapus
++        viewModel.responseDeleteData.observe(this, Observer { deleteData(it) })
++        viewModel.isError.observe(this, Observer { showError(it) })
++    }
++
++
++    private fun deleteData(it: ResponseAction?) {
++        Toast.makeText(applicationContext, it?.message, Toast.LENGTH_SHORT).show()
++        onResume()
++    }
++
++    private fun showError(it: Throwable?) {
++        Toast.makeText(applicationContext, it?.message, Toast.LENGTH_SHORT).show()
++
++    }
++
++    private fun showData(it: ResponseGetData) {
++
++        val adapter = dataAdapter(it.data, object : dataAdapter.OnClickListener {
++            override fun detail(item: DataItem?) {
++                val intent = Intent(applicationContext, ImputActivity::class.java)
++                intent.putExtra("data", item)
++                startActivity(intent)
++            }
++
++            override fun hapus(item: DataItem?) {
++                AlertDialog.Builder(this@MainActivity).apply {
++                    setTitle("Hapus Data")
++                    setMessage("Yakin mau hapus data ?")
++                    setPositiveButton("Hapus") { dialog, which ->
++                        viewModel.getDeleteData(item?.idMahasiswa)
++                        dialog.dismiss()
++                    }
++                    setNegativeButton("Batal") { dialog, which ->
++                        dialog.dismiss()
++                    }
++                }.show()
++            }
++
++
++        })
++        list.adapter = adapter
++    }
++
++    override fun onResume() {
++        super.onResume()
++        viewModel.getListData()
++    }
++
++}
++
++
++
++
++
++
++
++
++
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/ViewModel/ViewModelInputActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/ViewModel/ViewModelInputActivity.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/ViewModel/ViewModelInputActivity.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -0,0 +1,40 @@
++package com.sidiq.mahasiswa_app_sidiq.ViewModel
++
++import androidx.lifecycle.MutableLiveData
++import androidx.lifecycle.ViewModel
++import com.sidiq.mahasiswa_app_sidiq.Repo.Repository
++import com.sidiq.mahasiswa_app_sidiq.Repo.RepositoryInsert
++import com.sidiq.mahasiswa_app_sidiq.Repo.RepositoryUpdate
++import com.sidiq.mahasiswa_app_sidiq.model.ResponseAction
++
++class ViewModelInputActivity : ViewModel() {
++    val repositoryInsert = RepositoryInsert()
++    val repositoryUpdate = RepositoryUpdate()
++
++    val responseData = MutableLiveData<ResponseAction>()
++    val isError = MutableLiveData<Throwable>()
++
++    fun getListDataInsert(nama: String, nobp: String, alamat: String) {
++        repositoryInsert.getInsertdata(nama, nobp, alamat, {
++            responseData.value = it
++        }, {
++            isError.value = it
++        })
++    }
++
++    fun getListDataUpdate(id: String, nama: String, nobp: String, alamat: String) {
++        repositoryUpdate.getUpdatetdata(id, nama, nobp, alamat, {
++            responseData.value = it
++        }, {
++            isError.value = it
++        })
++    }
++
++
++}
++
++
++
++
++
++
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/ViewModel/ViewModelMainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/ViewModel/ViewModelMainActivity.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/ViewModel/ViewModelMainActivity.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -0,0 +1,35 @@
++package com.sidiq.mahasiswa_app_sidiq.ViewModel
++
++import androidx.lifecycle.MutableLiveData
++import androidx.lifecycle.ViewModel
++import com.sidiq.mahasiswa_app_sidiq.Repo.Repository
++import com.sidiq.mahasiswa_app_sidiq.Repo.RepositotyDelete
++import com.sidiq.mahasiswa_app_sidiq.model.ResponseAction
++import com.sidiq.mahasiswa_app_sidiq.model.ResponseGetData
++
++class ViewModelMainActivity : ViewModel() {
++
++    val repository = Repository()
++    val repositoryDelete =RepositotyDelete()
++
++    val responseData = MutableLiveData<ResponseGetData>()
++    val responseDeleteData = MutableLiveData<ResponseAction>()
++    val isError = MutableLiveData<Throwable>()
++
++    fun getListData() {
++        repository.getData({
++            responseData.value = it
++        }, {
++            isError.value = it
++        })
++    }
++
++    fun getDeleteData(id:String?) {
++        repositoryDelete.getDelete(id?:"",{
++            responseDeleteData.value = it
++        }, {
++            isError.value = it
++        })
++    }
++
++}
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/model/DataItem.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/model/DataItem.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/model/DataItem.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -5,7 +5,7 @@
+ import kotlinx.android.parcel.Parcelize
+ 
+ @Parcelize
+-data class DataItem (
++data class DataItem(
+     @field:SerializedName("mahasiswa_alamat")
+     val mahasiswaAlamat: String? = null,
+ 
+@@ -17,4 +17,4 @@
+ 
+     @field:SerializedName("mahasiswa_nama")
+     val mahasiswaNama: String? = null
+-    ) : Parcelable
++) : Parcelable
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/network/ApiService.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/network/ApiService.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/network/ApiService.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -9,7 +9,7 @@
+ interface ApiService {
+ 
+     @GET("getData.php")
+-    fun getData(): Call<ResponseGetData>
++    fun getData(): Flowable<ResponseGetData>
+ 
+ 
+     //GetDataById
+@@ -41,5 +41,7 @@
+     @POST("delete.php")
+     fun deleteData(
+         @Field("id_mahasiswa")id_mahasiswa:String
+-    ): Call<ResponseAction>
++    ): Flowable<ResponseAction>
++
++
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/network/NetworkModule.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/network/NetworkModule.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/network/NetworkModule.kt	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -7,7 +7,7 @@
+ class NetworkModule{
+ 
+     fun getRetrofit() : Retrofit {
+-        return Retrofit.Builder().baseUrl("http://192.168.1.7/mentoring_kotlin_week4/")
++        return Retrofit.Builder().baseUrl("http://192.168.1.5/mentoring_kotlin_week4/")
+             .addConverterFactory(GsonConverterFactory.create())
+             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+             .build()
+Index: app/src/main/res/layout/activity_imput.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_imput.xml	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/res/layout/activity_imput.xml	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -6,7 +6,7 @@
+     android:layout_height="match_parent"
+     android:padding="15dp"
+     android:orientation="vertical"
+-    tools:context=".ImputActivity">
++    tools:context=".View.ImputActivity">
+ 
+ 
+ 
+Index: app/src/main/res/layout/activity_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_main.xml	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/res/layout/activity_main.xml	(revision ae0892855d4378c5bac1bf2e92ad88b363426288)
+@@ -5,7 +5,7 @@
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:background="@color/colorPrimaryDark"
+-    tools:context=".MainActivity">
++    tools:context=".View.MainActivity">
+ 
+     <androidx.recyclerview.widget.RecyclerView
+         android:id="@+id/list"
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/ImputActivity.kt
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/ImputActivity.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/ImputActivity.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
+@@ -1,148 +0,0 @@
+-package com.sidiq.mahasiswa_app_sidiq
+-
+-import android.os.Bundle
+-import android.widget.Toast
+-import androidx.appcompat.app.AppCompatActivity
+-import com.sidiq.mahasiswa_app_sidiq.model.DataItem
+-import com.sidiq.mahasiswa_app_sidiq.model.ResponseAction
+-import com.sidiq.mahasiswa_app_sidiq.presenter.InputView
+-import com.sidiq.mahasiswa_app_sidiq.presenter.PresenterInput
+-import com.sidiq.mahasiswa_app_sidiq.presenter.PresenterUpdate
+-import com.sidiq.mahasiswa_app_sidiq.presenter.UpdateView
+-import kotlinx.android.synthetic.main.activity_imput.*
+-
+-
+-class ImputActivity : AppCompatActivity(), InputView,UpdateView {
+-
+-
+-    private var presenterUpdate: PresenterUpdate? = null
+-    private var presenter: PresenterInput? = null
+-
+-    override fun onCreate(savedInstanceState: Bundle?) {
+-        super.onCreate(savedInstanceState)
+-        setContentView(R.layout.activity_imput)
+-        val getData = intent.getParcelableExtra<DataItem>("data")
+-
+-        if (getData != null) {
+-            etNama.setText(getData.mahasiswaNama)
+-            etNohp.setText(getData.mahasiswaNobp)
+-            etAlamat.setText(getData.mahasiswaAlamat)
+-
+-            btn1.text = "Update"
+-
+-        }
+-
+-        when (btn1.text) {
+-            "Update" -> {
+-                presenterUpdate = PresenterUpdate(this)
+-                btn1.setOnClickListener {
+-
+-                    val id = getData?.idMahasiswa
+-                    val nama = etNama.text.toString()
+-                    val nohp = etNohp.text.toString()
+-                    val alamat = etAlamat.text.toString()
+-
+-                    presenterUpdate?.update(id, nama, nohp, alamat)
+-
+-                }
+-
+-
+-            }
+-            else -> {
+-
+-                btn1.setOnClickListener {
+-                    presenter = PresenterInput(this)
+-                    btn1.setOnClickListener {
+-                        //ambil inputan user
+-                        val nama = etNama.text.toString()
+-                        val nohp = etNohp.text.toString()
+-                        val alamat = etAlamat.text.toString()
+-
+-                        presenter?.inputData(nama, nohp, alamat)
+-                    }
+-                }
+-            }
+-        }
+-
+-
+-
+-        btn2.setOnClickListener {
+-            finish()
+-
+-        }
+-    }
+-
+-    override fun successInput(response: ResponseAction) {
+-        Toast.makeText(applicationContext, "Data berhasil disimpan", Toast.LENGTH_SHORT).show()
+-        finish()
+-    }
+-
+-    override fun errorInput(msg: String) {
+-        showToast("menyimpan gagal")
+-    }
+-
+-    fun showToast(msg: String) {
+-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+-    }
+-
+-    override fun successUpdate(response: ResponseAction) {
+-        Toast.makeText(applicationContext, "Data berhasil diubah", Toast.LENGTH_SHORT).show()
+-        finish()
+-    }
+-
+-    override fun errorUpdate(msg: String) {
+-        showToast("ubah  gagal")
+-    }
+-
+-
+-}
+-//    private fun inputData(mahasiswa_nama: String?, mahasiswa_nobp: String?, mahasiswa_alamat: String?){
+-//
+-//        val input = NetworkModule.service().insertData(mahasiswa_nama ?: "", mahasiswa_nobp ?: "", mahasiswa_alamat ?: "")
+-//        input.enqueue(object : Callback<ResponseAction> {
+-//
+-//            override fun onResponse(
+-//                call: Call<ResponseAction>,
+-//                response: Response<ResponseAction>
+-//            ) {
+-//
+-//                Toast.makeText(applicationContext, "Data berhasil disimpan", Toast.LENGTH_SHORT).show()
+-//                finish()
+-//
+-//            }
+-//
+-//            override fun onFailure(call: Call<ResponseAction>, t: Throwable) {
+-//
+-//                Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
+-//
+-//            }
+-//
+-//        })
+-//
+-//    }
+-
+-//    private fun updateData(id_mahasiswa: String?, mahasiswa_nama: String?, mahasiswa_nobp: String?, mahasiswa_alamat: String?){
+-//
+-//        val input = NetworkModule.service().updateData(id_mahasiswa ?: "", mahasiswa_nama ?: "", mahasiswa_nobp ?: "", mahasiswa_alamat ?: "")
+-//        input.enqueue(object : Callback<ResponseAction> {
+-//
+-//            override fun onResponse(
+-//                call: Call<ResponseAction>,
+-//                response: Response<ResponseAction>
+-//            ) {
+-//
+-//                Toast.makeText(applicationContext, "Data berhasil diupdate", Toast.LENGTH_SHORT).show()
+-//                finish()
+-//
+-//            }
+-//
+-//            override fun onFailure(call: Call<ResponseAction>, t: Throwable) {
+-//
+-//                Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
+-//
+-//            }
+-//
+-//        })
+-//
+-//    }
+-
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/MainActivity.kt
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/MainActivity.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/MainActivity.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
+@@ -1,122 +0,0 @@
+-package com.sidiq.mahasiswa_app_sidiq
+-
+-import android.content.Intent
+-import android.os.Bundle
+-import android.util.Log
+-import android.widget.Toast
+-import androidx.appcompat.app.AlertDialog
+-import androidx.appcompat.app.AppCompatActivity
+-import com.sidiq.mahasiswa_app_sidiq.adapter.dataAdapter
+-import com.sidiq.mahasiswa_app_sidiq.model.DataItem
+-import com.sidiq.mahasiswa_app_sidiq.model.ResponseAction
+-import com.sidiq.mahasiswa_app_sidiq.model.ResponseGetData
+-
+-import com.sidiq.mahasiswa_app_sidiq.network.NetworkModule
+-import kotlinx.android.synthetic.main.activity_main.*
+-import retrofit2.Call
+-import retrofit2.Callback
+-import retrofit2.Response
+-
+-class MainActivity : AppCompatActivity() {
+-    override fun onCreate(savedInstanceState: Bundle?) {
+-        super.onCreate(savedInstanceState)
+-        setContentView(R.layout.activity_main)
+-        fab.setOnClickListener {
+-            val intent = Intent(this, ImputActivity::class.java)
+-            startActivity(intent)
+-        }
+-
+-
+-        showData()
+-    }
+-
+-    private fun showData() {
+-        val listMahasiswa = NetworkModule().service().getData()
+-        listMahasiswa.enqueue(object : retrofit2.Callback<ResponseGetData> {
+-
+-
+-            override fun onFailure(call: Call<ResponseGetData>, t: Throwable) {
+-                Log.e("data onFailure", " " + t.message)
+-            }
+-
+-            override fun onResponse(
+-                call: Call<ResponseGetData>,
+-                response: Response<ResponseGetData>
+-            ) {
+-
+-                if (response.isSuccessful) {
+-                    Log.e("data Response", " data masuk")
+-                    val item = response.body()?.data
+-                    val adapter = dataAdapter(item, object : dataAdapter.OnClickListener {
+-                        override fun detail(item: DataItem?) {
+-                            val intent = Intent(applicationContext, ImputActivity::class.java)
+-                            intent.putExtra("data", item)
+-                            startActivity(intent)
+-                        }
+-
+-                        override fun hapus(item: DataItem?) {
+-                            AlertDialog.Builder(this@MainActivity).apply {
+-                                setTitle("Hapus Data")
+-                                setMessage("Yakin mau hapus data ?")
+-                                setPositiveButton("Hapus") { dialog, which ->
+-                                    hapusData(item?.idMahasiswa)
+-                                    dialog.dismiss()
+-                                }
+-                                setNegativeButton("Batal") { dialog, which ->
+-                                    dialog.dismiss()
+-                                }
+-                            }.show()
+-                        }
+-
+-
+-
+-
+-                    })
+-                    list.adapter = adapter
+-                }
+-
+-            }
+-
+-
+-        })
+-    }
+-
+-    private fun hapusData(idMahasiswa: String?) {
+-
+-        val hapus = NetworkModule().service().deleteData(idMahasiswa?: "")
+-        hapus.enqueue(object : Callback<ResponseAction> {
+-
+-            override fun onResponse(
+-                call: Call<ResponseAction>,
+-                response: Response<ResponseAction>
+-            ) {
+-
+-                Toast.makeText(applicationContext, "Data Berhasil dihapus", Toast.LENGTH_SHORT)
+-                    .show()
+-                showData()
+-                Log.e("data respon ","data berhasil terhapus")
+-
+-
+-            }
+-
+-            override fun onFailure(call: Call<ResponseAction>, t: Throwable) {
+-                Log.e("data onFailure", " " + t.message)
+-                Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
+-
+-            }
+-
+-        })
+-
+-    }
+-
+-    override fun onResume() {
+-        super.onResume()
+-        showData()
+-    }
+-
+-}
+-
+-
+-
+-
+-
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/InputView.kt
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/InputView.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/InputView.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
+@@ -1,8 +0,0 @@
+-package com.sidiq.mahasiswa_app_sidiq.presenter
+-
+-import com.sidiq.mahasiswa_app_sidiq.model.ResponseAction
+-
+-interface InputView {
+-    fun successInput(response : ResponseAction)
+-    fun errorInput(msg : String)
+-}
+\ No newline at end of file
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/PresenterInput.kt
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/PresenterInput.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/PresenterInput.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
+@@ -1,25 +0,0 @@
+-package com.sidiq.mahasiswa_app_sidiq.presenter
+-
+-import com.sidiq.mahasiswa_app_sidiq.ImputActivity
+-import com.sidiq.mahasiswa_app_sidiq.network.NetworkModule
+-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+-import io.reactivex.rxjava3.schedulers.Schedulers
+-
+-class PresenterInput(val inputView: ImputActivity) {
+-
+-    fun inputData(nama: String, nohp: String, alamat: String) {
+-
+-        NetworkModule().service().insertData(nama, nohp, alamat)
+-            .subscribeOn(Schedulers.io())
+-            .observeOn(AndroidSchedulers.mainThread())
+-            .subscribe({
+-                inputView.successInput(it)
+-            }, {
+-
+-                inputView.errorInput(it.localizedMessage)
+-            })
+-
+-    }
+-
+-
+-}
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/PresenterUpdate.kt
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/PresenterUpdate.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/PresenterUpdate.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
+@@ -1,21 +0,0 @@
+-package com.sidiq.mahasiswa_app_sidiq.presenter
+-
+-import com.sidiq.mahasiswa_app_sidiq.network.NetworkModule
+-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+-import io.reactivex.rxjava3.schedulers.Schedulers
+-
+-class PresenterUpdate( val updateView: UpdateView) {
+-
+-    fun update(id: String?, nama: String, nohp: String, alamat: String) {
+-
+-        NetworkModule().service().updateData(id ?:"",nama ?:"",nohp ?:"",alamat?:"")
+-            .subscribeOn(Schedulers.io())
+-            .observeOn(AndroidSchedulers.mainThread())
+-            .subscribe({
+-                updateView.successUpdate(it)
+-            },{
+-
+-                updateView.errorUpdate(it.localizedMessage)
+-            })
+-    }
+-}
+\ No newline at end of file
+Index: app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/UpdateView.kt
+===================================================================
+--- app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/UpdateView.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
++++ app/src/main/java/com/sidiq/mahasiswa_app_sidiq/presenter/UpdateView.kt	(revision 41aad0f93518c75e7656ca534ec37a8c431c3eb3)
+@@ -1,9 +0,0 @@
+-package com.sidiq.mahasiswa_app_sidiq.presenter
+-
+-import com.sidiq.mahasiswa_app_sidiq.model.ResponseAction
+-
+-interface UpdateView {
+-
+-    fun successUpdate(response : ResponseAction)
+-    fun errorUpdate(msg : String)
+-}
+\ No newline at end of file
