@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class NetworkModule{
 
     fun getRetrofit() : Retrofit {
-        return Retrofit.Builder().baseUrl("http://192.168.1.7/mentoring_kotlin_week4/")
+        return Retrofit.Builder().baseUrl("http://192.168.1.5/mentoring_kotlin_week4/")
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .build()

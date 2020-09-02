@@ -9,7 +9,7 @@ import retrofit2.http.*
 interface ApiService {
 
     @GET("getData.php")
-    fun getData(): Call<ResponseGetData>
+    fun getData(): Flowable<ResponseGetData>
 
 
     //GetDataById
@@ -41,5 +41,7 @@ interface ApiService {
     @POST("delete.php")
     fun deleteData(
         @Field("id_mahasiswa")id_mahasiswa:String
-    ): Call<ResponseAction>
+    ): Flowable<ResponseAction>
+
+
 }

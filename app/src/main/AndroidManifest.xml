@@ -15,8 +15,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
 
-        <activity android:name=".ImputActivity"></activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".View.ImputActivity"></activity>
+        <activity android:name=".View.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
